@@ -11,14 +11,18 @@ class Observable {
     this.callbacks.map((fn) => fn(x))
   }
 }
-
-const observable = new Observable()
-
 const pipe = (f, g) => (x) => g(f(x))
+
+const tap = (fn) => (x) => {
+  fn(x)
+  return x
+}
 
 const double = (x) => x * 2
 
-observable.subscribe(pipe(double, console.log))
+const observable = new Observable()
+
+observable.subscribe(pipe(tap(double), tap(console.log)))
 
 observable.emit(1)
 observable.emit(2)
