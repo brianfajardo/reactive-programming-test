@@ -14,7 +14,11 @@ class Observable {
 
 const observable = new Observable()
 
-observable.subscribe((x) => console.log(x))
+const pipe = (f, g) => (x) => g(f(x))
+
+const double = (x) => x * 2
+
+observable.subscribe(pipe(double, console.log))
 
 observable.emit(1)
 observable.emit(2)
