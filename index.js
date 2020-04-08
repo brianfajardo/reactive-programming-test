@@ -1,3 +1,15 @@
+// Utility functions
+const pipe = (...fns) => (initialValue) =>
+  fns.reduce((accValue, fn) => fn(accValue), initialValue)
+
+const tap = (fn) => (x) => {
+  fn(x)
+  return x
+}
+
+const double = (x) => x * 2
+
+// Reactive library
 class Observable {
   constructor() {
     this.callbacks = []
@@ -12,16 +24,7 @@ class Observable {
   }
 }
 
-const pipe = (...fns) => (initialValue) =>
-  fns.reduce((accValue, fn) => fn(accValue), initialValue)
-
-const tap = (fn) => (x) => {
-  fn(x)
-  return x
-}
-
-const double = (x) => x * 2
-
+// Example
 const observable = new Observable()
 
 observable.subscribe(pipe(tap(double), tap(console.log)))
