@@ -7,7 +7,7 @@ const tap = (fn) => (x) => {
   return x
 }
 
-const double = (x) => x * 2
+const mul = (x) => (y) => x * y
 
 // Reactive library
 class Observable {
@@ -22,18 +22,35 @@ class Observable {
   emit(x) {
     this.callbacks.map((fn) => fn(x))
   }
+
+  pipe(observable) {
+    this.subscribe((x) => observable.emit(x))
+  }
 }
 
 // Example
-const observable = new Observable()
+const observable1 = new Observable()
+const observable2 = new Observable()
+const observable3 = new Observable()
 
-observable.subscribe(pipe(tap(double), tap(console.log)))
+observable1.pipe(observable2)
+observable1.pipe(observable3)
 
-console.log(pipe(double, double, double)(10))
-console.log('---')
+observable1.subscribe(console.log)
+observable2.subscribe(console.log)
+observable3.subscribe(console.log)
 
-observable.emit(1)
-observable.emit(2)
-observable.emit(3)
-observable.emit(4)
-observable.emit(5)
+observable1.emit(1)
+observable1.emit(2)
+observable1.emit(3)
+
+// Prints three streams:
+// 1
+// 1
+// 1
+// 2
+// 2
+// 2
+// 3
+// 3
+// 3
