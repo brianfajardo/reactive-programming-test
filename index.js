@@ -40,25 +40,25 @@ class Mapper {
   }
 
   emit(x) {
-    this.observable.emit(x)
+    this.observable.emit(this.fn(x))
   }
 }
 
 // Example
 const observable = new Observable()
-const observable2 = observable.pipe(new Mapper())
+const doubler = observable.pipe(new Mapper((x) => x * 2))
 
 observable.subscribe(console.log)
-observable2.subscribe(console.log)
+doubler.subscribe(console.log)
 
 observable.emit(1)
 observable.emit(2)
 observable.emit(3)
 
-// Prints two streams of data
+// Prints two streams of data:
+// 2 (doubler stream)
 // 1
-// 1
+// 4 (doubler stream)
 // 2
-// 2
-// 3
+// 6 (doubler stream)
 // 3
