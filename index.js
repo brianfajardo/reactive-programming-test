@@ -11,7 +11,9 @@ class Observable {
     this.callbacks.map((fn) => fn(x))
   }
 }
-const pipe = (f, g) => (x) => g(f(x))
+
+const pipe = (...fns) => (initialValue) =>
+  fns.reduce((accValue, fn) => fn(accValue), initialValue)
 
 const tap = (fn) => (x) => {
   fn(x)
@@ -23,6 +25,9 @@ const double = (x) => x * 2
 const observable = new Observable()
 
 observable.subscribe(pipe(tap(double), tap(console.log)))
+
+console.log(pipe(double, double, double)(10))
+console.log('---')
 
 observable.emit(1)
 observable.emit(2)
