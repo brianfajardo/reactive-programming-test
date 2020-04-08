@@ -25,32 +25,40 @@ class Observable {
 
   pipe(observable) {
     this.subscribe((x) => observable.emit(x))
+    return observable
+  }
+}
+
+class Mapper {
+  constructor(fn) {
+    this.observable = new Observable()
+    this.fn = fn
+  }
+
+  subscribe(callbacks) {
+    this.observable.subscribe(callbacks)
+  }
+
+  emit(x) {
+    this.observable.emit(x)
   }
 }
 
 // Example
-const observable1 = new Observable()
-const observable2 = new Observable()
-const observable3 = new Observable()
+const observable = new Observable()
+const observable2 = observable.pipe(new Mapper())
 
-observable1.pipe(observable2)
-observable1.pipe(observable3)
-
-observable1.subscribe(console.log)
+observable.subscribe(console.log)
 observable2.subscribe(console.log)
-observable3.subscribe(console.log)
 
-observable1.emit(1)
-observable1.emit(2)
-observable1.emit(3)
+observable.emit(1)
+observable.emit(2)
+observable.emit(3)
 
-// Prints three streams:
-// 1
+// Prints two streams of data
 // 1
 // 1
 // 2
 // 2
-// 2
-// 3
 // 3
 // 3
