@@ -7,7 +7,7 @@ const tap = (fn) => (x) => {
   return x
 }
 
-const mul = (x) => (y) => x * y
+const multiplyBy = (x) => (y) => x * y
 
 // Reactive library
 class Observable {
@@ -25,7 +25,7 @@ class Observable {
 
   pipe(...observables) {
     return observables.reduce((acc, o) => {
-      acc.subscribe((x) => o.emit(x))
+      acc.subscribe(o.emit.bind(o))
       return o
     }, this)
   }
@@ -37,8 +37,8 @@ class Mapper {
     this.fn = fn
   }
 
-  subscribe(callbacks) {
-    this.observable.subscribe(callbacks)
+  subscribe(callback) {
+    this.observable.subscribe(callback)
   }
 
   emit(x) {
@@ -46,25 +46,45 @@ class Mapper {
   }
 }
 
+class Filter {
+  constructor(predicate) {
+    this.observable = new Observable()
+    this.predicate = predicate
+  }
+
+  subscribe(callback) {
+    this.observable.subscribe(callback)
+  }
+
+  emit(x) {
+    if (this.predicate(x)) {
+      this.observable.emit(x)
+    }
+  }
+}
+
 const rx = {
   map: (fn) => new Mapper(fn),
+  filter: (predicate) => new Filter(predicate),
 }
 
 // Example
-const observable = new Observable()
-const mutiplyByTen = observable.pipe(rx.map(mul(2)), rx.map(mul(5)))
+const myObservable = new Observable()
 
-observable.subscribe(console.log)
-mutiplyByTen.subscribe(console.log)
+myObservable
+  .pipe(
+    rx.map(multiplyBy(10)),
+    rx.filter((x) => x >= 30)
+  )
+  .subscribe(console.log)
 
-observable.emit(1)
-observable.emit(2)
-observable.emit(3)
+myObservable.emit(1)
+myObservable.emit(2)
+myObservable.emit(3)
+myObservable.emit(4)
+myObservable.emit(5)
 
-// Prints two streams of data:
-// 2 (mutiplyByTen stream)
-// 1
-// 4 (mutiplyByTen stream)
-// 2
-// 6 (mutiplyByTen stream)
-// 3
+// Prints one stream of data:
+// 30
+// 40
+// 50
