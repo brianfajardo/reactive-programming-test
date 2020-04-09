@@ -44,9 +44,13 @@ class Mapper {
   }
 }
 
+const rx = {
+  map: (fn) => new Mapper(fn),
+}
+
 // Example
 const observable = new Observable()
-const doubler = observable.pipe(new Mapper((x) => x * 2))
+const doubler = observable.pipe(rx.map((x) => x * 2))
 
 observable.subscribe(console.log)
 doubler.subscribe(console.log)
