@@ -23,9 +23,11 @@ class Observable {
     this.callbacks.map((fn) => fn(x))
   }
 
-  pipe(observable) {
-    this.subscribe((x) => observable.emit(x))
-    return observable
+  pipe(...observables) {
+    return observables.reduce((acc, o) => {
+      acc.subscribe((x) => o.emit(x))
+      return o
+    }, this)
   }
 }
 
@@ -50,19 +52,19 @@ const rx = {
 
 // Example
 const observable = new Observable()
-const doubler = observable.pipe(rx.map((x) => x * 2))
+const mutiplyByTen = observable.pipe(rx.map(mul(2)), rx.map(mul(5)))
 
 observable.subscribe(console.log)
-doubler.subscribe(console.log)
+mutiplyByTen.subscribe(console.log)
 
 observable.emit(1)
 observable.emit(2)
 observable.emit(3)
 
 // Prints two streams of data:
-// 2 (doubler stream)
+// 2 (mutiplyByTen stream)
 // 1
-// 4 (doubler stream)
+// 4 (mutiplyByTen stream)
 // 2
-// 6 (doubler stream)
+// 6 (mutiplyByTen stream)
 // 3
